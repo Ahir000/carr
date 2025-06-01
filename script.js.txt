@@ -1,0 +1,43 @@
+// Setup Scene, Camera, Renderer
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(
+  75, window.innerWidth / window.innerHeight, 0.1, 1000
+);
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setSize(window.innerWidth, window.innerHeight);
+document.body.appendChild(renderer.domElement);
+
+// Lighting
+const light = new THREE.DirectionalLight(0xffffff, 1);
+light.position.set(5, 10, 5);
+scene.add(light);
+
+// Ground (optional, for reference)
+const groundGeometry = new THREE.PlaneGeometry(100, 100);
+const groundMaterial = new THREE.MeshStandardMaterial({ color: 0x222222 });
+const ground = new THREE.Mesh(groundGeometry, groundMaterial);
+ground.rotation.x = -Math.PI / 2;
+ground.position.y = -0.5;
+scene.add(ground);
+
+// Load the 3D model
+const loader = new THREE.GLTFLoader();
+loader.load('free_city_road_layout_mockup.glb', function (gltf) {
+  const cityModel = gltf.scene;
+  cityModel.scale.set(1, 1, 1);
+  cityModel.position.set(0, 0, 0);
+  scene.add(cityModel);
+
+  // Animation loop
+  function animate() {
+    requestAnimationFrame(animate);
+    cityModel.rotation.y += 0.003; // slow rotation
+    renderer.render(scene, camera);
+  }
+  animate();
+}, undefined, function (error) {
+  console.error('Error loading model:', error);
+});
+
+// Camera Position
+camera.position.set(0, 3, 10);
